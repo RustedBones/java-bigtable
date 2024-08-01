@@ -106,14 +106,14 @@ echo ${JOB_TYPE}
 #export PATH=${JAVA_HOME}/bin:$PATH
 
 # attempt to install 3 times with exponential backoff (starting with 10 seconds)
-retry_with_backoff 3 10 \
-  mvn install -B -V -ntp \
-    -DskipTests=true \
-    -Dclirr.skip=true \
-    -Denforcer.skip=true \
-    -Dmaven.javadoc.skip=true \
-    -Dgcloud.download.skip=true \
-    -T 1C
+#retry_with_backoff 3 10 \
+#  mvn install -B -V -ntp \
+#    -DskipTests=true \
+#    -Dclirr.skip=true \
+#    -Denforcer.skip=true \
+#    -Dmaven.javadoc.skip=true \
+#    -Dgcloud.download.skip=true \
+#    -T 1C
 
 # if GOOGLE_APPLICATION_CREDENTIALS is specified as a relative path, prepend Kokoro root directory onto it
 if [[ ! -z "${GOOGLE_APPLICATION_CREDENTIALS}" && "${GOOGLE_APPLICATION_CREDENTIALS}" != /* ]]; then
@@ -122,6 +122,7 @@ fi
 
 RETURN_CODE=0
 set +e
+set -x
 
 case ${JOB_TYPE} in
 test)
@@ -149,7 +150,7 @@ integration)
 
     repo="git@github.com:googleapis/java-bigquery.git"
     repo_name=$(basename "${repo}" .git)
-    echo "${repo_name}"
+    echo "Repo Name: ${repo_name}"
     git clone "${repo}"
     pushd "${repo_name}"
     pwd
