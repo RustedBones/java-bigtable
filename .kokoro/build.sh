@@ -148,7 +148,7 @@ integration)
 #      -fae \
 #      verify
 
-    repo="git@github.com:googleapis/java-bigquery.git"
+    repo="https://github.com/googleapis/java-bigquery.git"
     repo_name=$(basename "${repo}" .git)
     echo "Repo Name: ${repo_name}"
     git clone "${repo}"
