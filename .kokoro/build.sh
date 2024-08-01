@@ -115,6 +115,22 @@ echo ${JOB_TYPE}
 #    -Dgcloud.download.skip=true \
 #    -T 1C
 
+repos=(
+#    "https://github.com/googleapis/java-bigtable.git"
+    "https://github.com/googleapis/java-bigquery.git"
+    "https://github.com/googleapis/java-bigquerystorage.git"
+    "https://github.com/googleapis/java-datastore.git"
+    "https://github.com/googleapis/java-firestore.git"
+    "https://github.com/googleapis/java-logging.git"
+    "https://github.com/googleapis/java-logging-logback.git"
+    "https://github.com/googleapis/java-pubsub.git"
+    "https://github.com/googleapis/java-pubsublite.git"
+    "https://github.com/googleapis/java-spanner.git"
+    "https://github.com/googleapis/java-spanner-jdbc.git"
+    "https://github.com/googleapis/java-storage.git"
+    "https://github.com/googleapis/java-storage-nio.git"
+)
+
 # if GOOGLE_APPLICATION_CREDENTIALS is specified as a relative path, prepend Kokoro root directory onto it
 if [[ ! -z "${GOOGLE_APPLICATION_CREDENTIALS}" && "${GOOGLE_APPLICATION_CREDENTIALS}" != /* ]]; then
     export GOOGLE_APPLICATION_CREDENTIALS=$(realpath ${KOKORO_GFILE_DIR}/${GOOGLE_APPLICATION_CREDENTIALS})
@@ -148,21 +164,21 @@ integration)
 #      -fae \
 #      verify
 
-    repo="https://github.com/googleapis/java-bigquery.git"
-    repo_name=$(basename "${repo}" .git)
-    echo "Repo Name: ${repo_name}"
-    git clone "${repo}"
-    pushd "${repo_name}"
-    pwd
-    mvn install -B -V -ntp \
-        -DskipTests=true \
-        -Dclirr.skip=true \
-        -Denforcer.skip=true \
-        -Dmaven.javadoc.skip=true \
-        -Dgcloud.download.skip=true \
-        -T 1C
-    mvn clean verify -Penable-integration-tests -Dclirr.skip=true -Denforcer.skip=true
-    popd
+    for repo in "${repos[@]}"
+    do
+      repo_name=$(basename "${repo}" .git)
+      echo "Running ITs for ${repo_name} -----"
+      git clone "${repo}"
+      pushd "${repo_name}"
+      mvn clean verify -B -V -ntp \
+          -Penable-integration-tests \
+          -Dclirr.skip=true \
+          -Denforcer.skip=true \
+          -Dmaven.javadoc.skip=true \
+          -Dgcloud.download.skip=true \
+          -T 1C
+      popd
+    done
     RETURN_CODE=$?
     ;;
 graalvm)
